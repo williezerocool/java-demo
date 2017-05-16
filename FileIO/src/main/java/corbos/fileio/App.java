@@ -11,19 +11,24 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+import java.nio.file.Files;
+import java.nio.file.Paths;
 /**
  *
  * @author parallels
  */
 public class App {
 
-    private static final String PATH = "data.txt";
+    private static final String DATA_PATH = "data.txt";
+    private static final String SIMPLE_PATH = "simple.txt";
 
     public static void main(String[] args) {
-        displayFile(PATH); // file is relative to the project, so this should work.
+        displayFile(DATA_PATH); // file is relative to the project, so this should work.
         addRecord("Ernie", "Pittman", "ernie.pittman@aol.com", "1111222299998888");
-        displayFile(PATH); // display a second time to confirm our record was added.
+        displayFile(DATA_PATH); // display a second time to confirm our record was added.
+        
+        simpleWrite();
+        System.out.print(simpleRead());
     }
 
     private static void displayFile(String path) {
@@ -43,12 +48,33 @@ public class App {
     }
 
     private static void addRecord(String firstName, String lastName, String email, String creditCard) {
-        try (FileWriter fw = new FileWriter(PATH, true); // the second parameter indicates we append text vs start from scratch
+        try (FileWriter fw = new FileWriter(DATA_PATH, true); // the second parameter indicates we append text vs start from scratch
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter writer = new PrintWriter(bw);) {
             writer.printf("\n%s,%s,%s,%s", firstName, lastName, email, creditCard);
             writer.flush();
             writer.close();
+        } catch (IOException ex) {
+            System.out.printf("Error!: %s", ex);
+        }
+    }
+
+    private static String simpleRead() {       
+        try {
+            return String.join("\n", Files.readAllLines(Paths.get(SIMPLE_PATH)));
+        } catch (IOException ex) {
+            System.out.printf("Error!: %s", ex);
+        }  
+        return null;
+    }
+
+    private static void simpleWrite() {
+        try {
+            PrintWriter pw = new PrintWriter(SIMPLE_PATH);
+            pw.println("apple");
+            pw.println("bananna");
+            pw.println("kiwi");
+            pw.close();
         } catch (IOException ex) {
             System.out.printf("Error!: %s", ex);
         }
